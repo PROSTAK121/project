@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>История местоположений</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>История местоположений</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Главная</a></li>
+                <li><a href="/history">История</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>Последние координаты</h2>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Дата и время</th>
+                        <th>Широта</th>
+                        <th>Долгота</th>
+                        <th>Адрес</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loc in locations %}
+                    <tr>
+                        <td>{{ loc.timestamp.strftime('%d.%m.%Y %H:%M:%S') }}</td>
+                        <td>{{ loc.latitude }}</td>
+                        <td>{{ loc.longitude }}</td>
+                        <td>{{ loc.address }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 Геотрекер
+    </footer>
+</body>
+</html>

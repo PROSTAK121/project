@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Геотрекер — Отслеживание местоположения</title>
+    <link rel="stylesheet" href="/static/style.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+    <!-- Шапка -->
+    <header>
+        <h1>Геотрекер</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Главная</a></li>
+                <li>
+                    <a href="#">Информация</a>
+                    <ul>
+                        <li><a href="/about">О нас</a></li>
+                        <li><a href="#contacts">Контакты</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Основной контент -->
+    <main>
+        <div class="card">
+            <h2>📍 Геолокация</h2>
+
+            <div class="location-info">
+                <p><span class="label">Широта:</span> <span id="lat">...</span></p>
+                <p><span class="label">Долгота:</span> <span id="lon">...</span></p>
+                <p><span class="label">Адрес:</span> <span id="address">Загрузка...</span></p>
+            </div>
+
+            <h3>🌆 Выберите любимый город</h3>
+            <select id="city-select">
+                <option value="moscow">Москва</option>
+                <option value="piter">Санкт-Петербург</option>
+                <option value="kazan">Казань</option>
+            </select>
+
+            <h3 style="margin-top: 30px;">🗺 Карта</h3>
+            <div id="map"></div>
+
+            <!-- Кнопка "История местоположений" -->
+            <div class="history-button-container" style="text-align: center; margin-top: 20px;">
+                <a href="/history" class="history-button" style="
+                    display: inline-block;
+                    background-color: #007BFF;
+                    color: white;
+                    padding: 10px 20px;
+                    text-decoration: none;
+                    border-radius: 6px;
+                    font-weight: bold;
+                    transition: background-color 0.3s ease;
+                ">
+                    📋 История местоположений
+                </a>
+            </div>
+        </div>
+
+        <!-- Контакты -->
+        <div class="card" id="contacts">
+            <h2>📞 Контакты</h2>
+            <p><strong>Email:</strong> geo.support@example.com</p>
+            <p><strong>Телефон:</strong> +7 (999) 123-45-67</p>
+            <p><strong>Адрес офиса:</strong> г. Москва, ул. Примерная, д. 12</p>
+        </div>
+    </main>
+
+    <!-- Меню внизу -->
+    <aside class="bottom-menu">
+        <ul>
+            <li><a href="/">Главная</a></li>
+            <li><a href="/about">О нас</a></li>
+            <li><a href="#contacts">Контакты</a></li>
+            <li><a href="#">Часто задаваемые вопросы</a></li>
+        </ul>
+    </aside>
+
+    <!-- Футер -->
+    <footer>
+        &copy; 2025 Геотрекер. Все права защищены.
+    </footer>
+
+    <!-- Скрипт геолокации -->
+    <script>
+        let map;
+        let marker;
+
+        function updateLocation() {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                document.getElementById("lat").innerText = lat.toFixed(6);
+                document.getElementById("lon").innerText = lon.toFixed(6);
+
+                fetch('/location', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ latitude: lat, longitude: lon })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("address").innerText = data.address;
+                });
+
+                if (!map) {
+                    map = L.map('map').setView([lat, lon], 13);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap'
+                    }).addTo(map);
+
+                    marker = L.marker([lat, lon]).addTo(map).bindPopup("Вы здесь").openPopup();
+                } else {
+                    marker.setLatLng([lat, lon]);
+                    map.setView([lat, lon]);
+                }
+            });
+        }
+
+        setInterval(updateLocation, 10000);
+        updateLocation();
+    </script>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>О нас</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>Геотрекер</h1>
+        <nav>
+            <a href="/">Главная</a>
+            <a href="/about">О нас</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>О нас</h2>
+        <p>Это учебный проект по отслеживанию местоположения пользователя и отображению его адреса в реальном времени.</p>
+        <p>Цель нашего проекта — предоставить пользователям удобный инструмент для получения информации о текущем местоположении и его истории.</p>
+    </main>
+
+    <footer>
+        &copy; 2025 Геотрекер. Все права защищены.
+    </footer>
+</body>
+</html>
+
+
+
